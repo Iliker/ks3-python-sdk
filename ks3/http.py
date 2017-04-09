@@ -1,8 +1,8 @@
 
-import httplib
 import time
 import urllib
 import re
+import http.client as httplib
 
 from ks3.auth import canonical_string, add_auth_header
 
@@ -19,12 +19,12 @@ def merge_meta(headers, metadata):
     return final_headers
 
 
-def query_args_hash_to_string(query_args):    
+def query_args_hash_to_string(query_args):
     pairs = []
     for k, v in query_args.items():
         piece = k
         if v != None:
-            piece += "=%s" % urllib.quote_plus(str(v).encode('utf-8'))
+            piece += "=%s" % urllib.parse.quote_plus(str(v).encode('utf-8'))
         pairs.append(piece)
 
     return '&'.join(pairs)
@@ -33,21 +33,21 @@ def query_args_hash_to_string(query_args):
 def get_object_url(age, bucket="", key="", secret_access_key="", access_key_id="", query_args={}):
     expire = str(int(time.time()) + age)
     headers = {"Date": expire}
-    c_string = canonical_string("GET", bucket, key, query_args, headers)    
+    c_string = canonical_string("GET", bucket, key, query_args, headers)
     path = c_string.split("\n")[-1]
-    
-    signature = urllib.quote_plus(encode(secret_access_key, c_string))
+
+    signature = urllib.parse.quote_plus(encode(secret_access_key, c_string))
     if "?" in path:
         url = "http://kss.ksyun.com%s&Expires=%s&AccessKeyId=%s&Signature=%s" % \
             (path, expire, access_key_id, signature)
     else:
         url = "http://kss.ksyun.com%s?Expires=%s&AccessKeyId=%s&Signature=%s" % \
-            (path, expire, access_key_id, signature)        
+            (path, expire, access_key_id, signature)
     return url
 
 
-def make_request(server, port, access_key_id, access_key_secret, method, 
-                 bucket="", key="", query_args=None, headers=None, data="", 
+def make_request(server, port, access_key_id, access_key_secret, method,
+                 bucket="", key="", query_args=None, headers=None, data="",
                  metadata=None, call_fmt=CallingFormat.PATH, is_secure=False):
     if not headers:
         headers = {}
@@ -66,7 +66,7 @@ def make_request(server, port, access_key_id, access_key_secret, method,
             path += "/%s" % bucket
 
     #TODO
-    encode_key = urllib.quote_plus(key.encode('utf-8'))
+    encode_key = urllib.parse.quote_plus(key.encode('utf-8'))
     if '%20' in encode_key:
        encode_key = encode_key.replace('%20','+')
 
@@ -85,7 +85,7 @@ def make_request(server, port, access_key_id, access_key_secret, method,
         path += "?" + query_args
 
     host = "%s:%d" % (server, port)
-    
+
     if (is_secure):
         connection = httplib.HTTPSConnection(host)
     else:

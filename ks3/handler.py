@@ -21,7 +21,7 @@
 
 import xml.sax
 
-from compat import StringIO
+from py3compat import StringIO
 
 
 class XmlHandler(xml.sax.ContentHandler):

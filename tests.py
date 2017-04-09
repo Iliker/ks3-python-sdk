@@ -9,8 +9,10 @@ from ks3.acl import Policy, ACL, Grant
 from ks3.user import User
 
 
-ak = 'YOUR_ACCESS_KEY'
-sk = 'YOUR_SECRET_KEY'
+ak = 'xCd2X8gCXXFfJZcgoJqJ'
+sk = 'YENO6wZRHszheNG+ME+e04GuMHh3B9Y7ICNCISMH'
+ak = ''
+sk = ''
 #conn = Connection(ak, sk, server='test.ks3.ksyun.com')
 conn = Connection(ak, sk)
 test_bucket = 'sdktest123'
@@ -25,7 +27,7 @@ class TestAuthToken(unittest.TestCase):
         key = test_key
         query_args = {'upload': None}
         add_auth_header(ak, sk, headers, method, bucket, key, query_args)
-        print headers['Authorization']
+        print(headers['Authorization'])
 
 #------------------------------------bucket relative test------------------------------
 class TestBucket(unittest.TestCase):
@@ -33,8 +35,8 @@ class TestBucket(unittest.TestCase):
     # Get all buckets
     def test_get_all_buckets(self):
         buckets = conn.get_all_buckets()
-        for b in  buckets:
-            print b.name
+        for b in buckets:
+            print(b.name)
             assert isinstance(b, Bucket)
 
     # Get keys within specified bucket
@@ -42,12 +44,12 @@ class TestBucket(unittest.TestCase):
         bucket = conn.get_bucket(test_bucket)
         keys = bucket.list()
         for k in keys:
-            print k.name
+            print(k.name)
 
     # Get bucket location
     def test_get_bucket_location(self):
         loc = conn.get_bucket_location(test_bucket)
-        print loc
+        print(loc)
 
 class TestDeleteBucket(unittest.TestCase):
     """
@@ -60,7 +62,7 @@ class TestCreateBucket(unittest.TestCase):
     # Create one bucket
     def test_create_bucket(self):
         bucket = conn.create_bucket(test_bucket)
-        print bucket.name
+        print(bucket.name)
         #assert "sdktest" == bucket.name
 
 class TestListMulUploads(unittest.TestCase):
@@ -68,14 +70,14 @@ class TestListMulUploads(unittest.TestCase):
         bucket = conn.get_bucket(test_bucket)
         parts = bucket.list_multipart_uploads()
         for part in parts:
-            print part.to_xml()
-            print part
+            print(part.to_xml())
+            print(part)
 
 class TestGetBucketLoggingStatus(unittest.TestCase):
     def test_get_bucket_logging_status(self):
         bucket = conn.get_bucket(test_bucket)
-        print bucket.get_logging_status()
- 
+        print(bucket.get_logging_status())
+
 class TestSetBucketLogging(unittest.TestCase):
     def test_set_bucket_logging(self):
         bucket = conn.get_bucket(test_bucket)
@@ -86,7 +88,7 @@ class TestSetBucketLogging(unittest.TestCase):
         grants = Grant()
         logging = BucketLogging(target, prefix, grants).to_xml()
         bucket.set_xml_logging(logging)
-        
+
 class TestDisableBucketLogging(unittest.TestCase):
     def test_disable_bucket_logging(self):
         bucket = conn.get_bucket(test_bucket)
@@ -100,7 +102,7 @@ class TestEnableBucketLogging(unittest.TestCase):
 class TestGetBucketAcl(unittest.TestCase):
     def test_get_bucket_acl(self):
         bucket = conn.get_bucket(test_bucket)
-        print bucket.get_acl()
+        print(bucket.get_acl())
 
 class TestSetBucketAcl(unittest.TestCase):
     def test_set_bucket_acl(self):
@@ -117,7 +119,7 @@ class TestGetKeyAcl(unittest.TestCase):
         policy = bucket.get_acl()
         #print policy.to_xml()
         for grant in policy.acl.grants:
-            print grant.permission, grant.display_name, grant.email_address, grant.id
+            print(grant.permission, grant.display_name, grant.email_address, grant.id)
 
 class TestSetKeyAcl(unittest.TestCase):
     """
@@ -144,7 +146,7 @@ class TestSetKeyAcl(unittest.TestCase):
         bucket = conn.get_bucket(test_bucket)
         #ret = bucket.set_acl("public-read-write", test_key)
         ret = bucket.set_acl(policy, test_key)
-        print ret
+        print(ret)
 
 #------------------------------------upload object test------------------------------
 class TestUploadObject(unittest.TestCase):
@@ -152,7 +154,7 @@ class TestUploadObject(unittest.TestCase):
     def test_create_object(self):
         bucket = conn.get_bucket(test_bucket)
         key = bucket.new_key(test_key)
-        print key.set_contents_from_filename("/root/KS3SDK_upload_test", policy="public-read-write")
+        print(key.set_contents_from_filename("/root/KS3SDK_upload_test", policy="public-read-write"))
 
 class TestGetObject(unittest.TestCase):
     def test_get_object(self):
@@ -161,7 +163,7 @@ class TestGetObject(unittest.TestCase):
         if key:
             key.get_contents_to_filename("/root/KS3SDK_download_test")
         else:
-            print "Object key is NOT exist."
+            print("Object key is NOT exist.")
 
     def test_head_object(self):
         pass
@@ -177,7 +179,7 @@ class TestMultipartUploadObject(unittest.TestCase):
         source_size = os.stat(source_path).st_size
 
         mp = bucket.initiate_multipart_upload(os.path.basename(source_path), policy="public-read-write")
-        print mp.id
+        print(mp.id)
 
         #chunk_size = 52428800
         chunk_size = 52428800
@@ -197,19 +199,19 @@ class TestAbortMultipartUpload(unittest.TestCase):
         bucket = conn.get_bucket(test_bucket)
         for p in bucket.get_all_multipart_uploads():
             # delete all parts
-            print p.id
-            print p.cancel_upload()
+            print(p.id)
+            print(p.cancel_upload())
 
 class TestListPart(unittest.TestCase):
     def test_list_part(self):
         bucket = conn.get_bucket(test_bucket)
         for p in bucket.get_all_multipart_uploads():
-            print p.id
+            print(p.id)
 
 class TestDeleteObject(unittest.TestCase):
     def test_delete_object(self):
         bucket = conn.get_bucket(test_bucket)
-        print bucket.delete_key(test_key)
+        print(bucket.delete_key(test_key))
 
 
 class TestKeyLink(unittest.TestCase):
@@ -217,7 +219,7 @@ class TestKeyLink(unittest.TestCase):
         bucket = conn.get_bucket(test_bucket)
         key = bucket.get_key(test_key)
         #print key.generate_url(expires_in=1435320559, expires_in_absolute=True)
-        print key.generate_url(expires_in=10000, expires_in_absolute=False)
+        print(key.generate_url(expires_in=10000, expires_in_absolute=False))
 
 
 if __name__ == '__main__':

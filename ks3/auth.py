@@ -40,23 +40,22 @@ def canonical_string(method, bucket="", key="", query_args=None, headers=None, e
         headers = {}
     if not query_args:
         query_args = ""
-        
+
     interesting_headers = {}
     for header_key in headers:
         lk = header_key.lower()
         if lk in ['content-md5', 'content-type', 'date'] or lk.startswith("x-kss-"):
             interesting_headers[lk] = headers[header_key].strip()
-    if not interesting_headers.has_key('content-type'):
+    if 'content-type' not in interesting_headers:
         interesting_headers['content-type'] = ''
-    if not interesting_headers.has_key('content-md5'):
+    if 'content-md5' not in interesting_headers:
         interesting_headers['content-md5'] = ''
-    if interesting_headers.has_key('x-kss-date'):
+    if 'x-kss-date' in interesting_headers:
         interesting_headers['date'] = ''
     if expires:
         interesting_headers['date'] = str(expires)
 
-    sorted_header_keys = interesting_headers.keys()
-    sorted_header_keys.sort()
+    sorted_header_keys = sorted(interesting_headers.keys())
     buf = "%s\n" % method
     for header_key in sorted_header_keys:
         if header_key.startswith("x-kss-"):
@@ -67,7 +66,7 @@ def canonical_string(method, bucket="", key="", query_args=None, headers=None, e
     if bucket:
         buf += "/%s" % bucket
 
-    encode_key = urllib.quote_plus(key.encode('utf-8'))
+    encode_key = urllib.parse.quote_plus(key.encode('utf-8'))
     # TODO
     #
     if '%20' in encode_key:
@@ -95,7 +94,9 @@ def canonical_string(method, bucket="", key="", query_args=None, headers=None, e
     return buf
 
 def encode(secret_access_key, str_to_encode, urlencode=False):
-    b64_hmac = base64.encodestring(hmac.new(secret_access_key, str_to_encode, sha).digest()).strip()
+    secret_access_key = secret_access_key.encode()
+    str_to_encode = str_to_encode.encode()
+    b64_hmac = base64.encodestring(hmac.new(secret_access_key, str_to_encode, sha).digest()).strip().decode()
     if urlencode:
         return urllib.quote_plus(b64_hmac)
     else:
@@ -104,11 +105,9 @@ def encode(secret_access_key, str_to_encode, urlencode=False):
 def add_auth_header(access_key_id, secret_access_key, headers, method, bucket, key, query_args):
     if not access_key_id:
         return
-    if not headers.has_key('Date'):
+    if 'Date' not in headers:
         headers['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
 
     c_string = canonical_string(method, bucket, key, query_args, headers)
     headers['Authorization'] = \
         "%s %s:%s" % ("KSS", access_key_id, encode(secret_access_key, c_string))
-
-

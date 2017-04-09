@@ -7,8 +7,10 @@
 #  code is at your own risk.
 
 import time
-import urllib, urlparse
+import urllib
 import xml.sax
+
+from urllib.parse import urlparse
 
 from ks3 import auth
 from ks3 import handler
@@ -114,7 +116,7 @@ class Connection(object):
         self.calling_format = calling_format()
         if (is_secure):
             self.protocol = 'https'
-        else:   
+        else:
             self.protocol = 'http'
 
         if isinstance(provider, Provider):
@@ -149,7 +151,7 @@ class Connection(object):
         resp = make_request(self.host, self.port, self.access_key_id,
                             self.access_key_secret, method, bucket, key,
                             query_args, headers, data, metadata)
-        
+
         return resp
 
     def get_all_buckets(self, headers=None):
@@ -383,4 +385,3 @@ class Connection(object):
         if params:
             path = path + params
         return path
-
