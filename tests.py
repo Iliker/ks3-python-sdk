@@ -9,10 +9,8 @@ from ks3.acl import Policy, ACL, Grant
 from ks3.user import User
 
 
-ak = 'xCd2X8gCXXFfJZcgoJqJ'
-sk = 'YENO6wZRHszheNG+ME+e04GuMHh3B9Y7ICNCISMH'
-ak = ''
-sk = ''
+ak = 'YOUR_ACCESS_KEY'
+sk = 'YOUR_SECRET_KEY'
 #conn = Connection(ak, sk, server='test.ks3.ksyun.com')
 conn = Connection(ak, sk)
 test_bucket = 'sdktest123'
